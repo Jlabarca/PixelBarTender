@@ -106,7 +106,7 @@ public class DynamicParticle : MonoBehaviour {
 
     void CheckIfFarAway()
     {
-        if (Vector3.Distance(transform.position, Vector3.zero) > 10)
+        if (Vector3.Distance(transform.position, Vector3.zero) > 30)
         {
             Destroy(gameObject);
         }
