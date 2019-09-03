@@ -222,8 +222,6 @@ public class Customer : MonoBehaviour
         vaso.SetActive(true);
         text.gameObject.SetActive(false);
         dialogue.SetActive(true);
-        await AnimationUtils.PushMeAnimation(dialogue.transform);
-        await AnimationUtils.PushMeAnimation(dialogue.transform);
-        await AnimationUtils.PushMeAnimation(dialogue.transform);
+        await Task.Delay(500);
     }
 }
