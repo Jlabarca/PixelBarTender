@@ -9,7 +9,6 @@ public class CameraController : MonoBehaviour {
     public GameObject player;
     public Camera camera;
     public Vector3 velocity;
-    public Vector3 offset;
     public float boundX=0.3f, boundY = 0.15f;
     public float cameraSmoothing = 0.05f;
     public CameraShake cameraShake;
@@ -19,7 +18,6 @@ public class CameraController : MonoBehaviour {
     void Start()
     {
         cameraShake = camera.GetComponent<CameraShake>();
-        offset = Vector3.zero;
         //cameraShake.ShakeIt(3, .07f);
     }
     private void FixedUpdate() {
@@ -47,7 +45,7 @@ public class CameraController : MonoBehaviour {
                 delta.y = deltaY + boundY;
             }
         }
-        targetPosition = lookAt.position + offset;
+        targetPosition = lookAt.position;
         Vector3 position = new Vector3(transform.position.x, transform.position.y, -1f);
         Vector3 newPosition = new Vector3(targetPosition.x, targetPosition.y, -1f);
         //Vector3.Lerp(transform.position, nextPosition, Time.deltaTime * moveSpeed);
@@ -69,17 +67,7 @@ public class CameraController : MonoBehaviour {
     }
 
 
-    public void Watch(Transform target)
-    {
-        lookAt = target;
-        this.offset = Vector3.zero;
-    }
 
-    public void Watch(Transform target, Vector3 offset)
-    {
-        lookAt = target;
-        this.offset = offset;
-    }
     /** Zoom */
 
     public async Task ZoomSize(float size)

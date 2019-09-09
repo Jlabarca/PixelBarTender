@@ -69,17 +69,7 @@ public class CameraController : MonoBehaviour {
     }
 
 
-    public void Watch(Transform target)
-    {
-        lookAt = target;
-        this.offset = Vector3.zero;
-    }
 
-    public void Watch(Transform target, Vector3 offset)
-    {
-        lookAt = target;
-        this.offset = offset;
-    }
     /** Zoom */
 
     public async Task ZoomSize(float size)

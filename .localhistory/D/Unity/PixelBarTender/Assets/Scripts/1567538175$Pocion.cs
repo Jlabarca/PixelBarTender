@@ -33,15 +33,7 @@ public class Pocion : MonoBehaviour
     void CallMoveAndDisapear(Vector3 target)
     {
         movePosition = target;
-        PourDrink();
-    }
-
-    async Task PourDrink()
-    {
-        manager.drinkEmitter.color = content.color;
-        manager.drinkEmitter.emit = true;
-        await Task.Delay(1000);
-        manager.drinkEmitter.emit = false;
+        MoveAndDisapear();
     }
 
     async Task MoveAndDisapear()

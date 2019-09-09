@@ -11,7 +11,6 @@ public class GravityFromAccelerometer : MonoBehaviour
 
     void Start()
     {
-        Physics2D.gravity = new Vector2(0, -5 * g);
         originalGravity = Physics2D.gravity;
         active = false;
     }

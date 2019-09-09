@@ -5,19 +5,27 @@ using UnityEngine;
 
 public class AnimationUtils {
 
-    public static async Task PushMeAnimation(Transform t)
+    public static async Task PushMeAnimation(Transform t, int times = 3)
     {
-        t.localScale = t.localScale * 1.05f;
-        await Task.Delay(50);
-        t.localScale = t.localScale * 1.05f;
-        await Task.Delay(50);
-        t.localScale = t.localScale * 1.05f;
-        await Task.Delay(50);
-        t.localScale = t.localScale * 0.95f;
-        await Task.Delay(50);
-        t.localScale = t.localScale * 0.95f;
-        await Task.Delay(50);
-        t.localScale = t.localScale * 0.95f;
-        Debug.Log("ANIMATED");
+        for (int i = 0; i < times; i++)
+        {
+            t.localScale = t.localScale * 1.05f;
+            await Task.Delay(50);
+        }
+        for (int i = 0; i < times; i++)
+        {
+            t.localScale = t.localScale * 0.95f;
+            await Task.Delay(50);
+        }
+    }
+
+    public static async Task BlinkAnimation(GameObject g, int times = 3)
+    {
+       for(int i = 0; i < times; i++)
+        {
+            g.SetActive(false);
+            await Task.Delay(100);
+            g.SetActive(true);
+        }
     }
 }

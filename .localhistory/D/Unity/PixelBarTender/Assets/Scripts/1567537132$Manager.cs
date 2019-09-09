@@ -27,7 +27,7 @@ public class Manager : MonoBehaviour
     private float initialTime;
     public Phase phase;
     public enum Phase { Start, Wait, Choose, Pour, Mix, Deliver, Score};
-    public ParticleGenerator drinkEmitter;
+
     // Start is called before the first frame update
     async void Start()
     {
@@ -73,7 +73,8 @@ public class Manager : MonoBehaviour
         await MoveElementTo(tapa.transform, 0, 30);
         await Task.Delay(1000);
         cameraController.Watch(vaso.transform);
-        await cameraController.ZoomSize(40);
+        await cameraController.ZoomSize(20);
+        await customerList[0].StartOrdering();
     }
     public async Task StartChoosing()
     {
@@ -169,26 +170,18 @@ public class Manager : MonoBehaviour
         }
     }
 
-    public void ChangePhaseClick()
-    {
-        ChangePhase();
-    }
-
     public async Task ChangePhase()
     {
-        //await GetDrinkStats();
-        switch (phase)
+        await GetDrinkStats();
+        /*switch (phase)
         {
-            case Phase.Choose:
-                await StartMixing();
-                break;
             case Phase.Pour:
                 await StartMixing();
                 break;
             case Phase.Mix:
                 await StartDeliver();
                 break;
-        }
+        }*/
     }
 
     private async Task StartDeliver()

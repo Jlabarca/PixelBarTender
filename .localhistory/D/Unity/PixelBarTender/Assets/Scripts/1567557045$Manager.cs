@@ -74,6 +74,7 @@ public class Manager : MonoBehaviour
         await Task.Delay(1000);
         cameraController.Watch(vaso.transform);
         await cameraController.ZoomSize(40);
+        await customerList[0].StartOrdering();
     }
     public async Task StartChoosing()
     {
@@ -169,19 +170,11 @@ public class Manager : MonoBehaviour
         }
     }
 
-    public void ChangePhaseClick()
-    {
-        ChangePhase();
-    }
-
     public async Task ChangePhase()
     {
         //await GetDrinkStats();
         switch (phase)
         {
-            case Phase.Choose:
-                await StartMixing();
-                break;
             case Phase.Pour:
                 await StartMixing();
                 break;

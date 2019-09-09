@@ -38,7 +38,6 @@ public class Pocion : MonoBehaviour
 
     async Task PourDrink()
     {
-        manager.drinkEmitter.color = content.color;
         manager.drinkEmitter.emit = true;
         await Task.Delay(1000);
         manager.drinkEmitter.emit = false;

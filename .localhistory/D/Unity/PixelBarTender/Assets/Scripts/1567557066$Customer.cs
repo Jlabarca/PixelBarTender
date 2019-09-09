@@ -39,7 +39,6 @@ public class Customer : MonoBehaviour
         state = State.None;
         dialogue.SetActive(false);
         SetWantedColor();
-        StartOrdering();
     }
 
     public void SetWantedColor()

@@ -27,7 +27,7 @@ public class Manager : MonoBehaviour
     private float initialTime;
     public Phase phase;
     public enum Phase { Start, Wait, Choose, Pour, Mix, Deliver, Score};
-    public ParticleGenerator drinkEmitter;
+
     // Start is called before the first frame update
     async void Start()
     {
@@ -72,25 +72,29 @@ public class Manager : MonoBehaviour
         await MoveElementTo(pociones.transform, 0, 30);
         await MoveElementTo(tapa.transform, 0, 30);
         await Task.Delay(1000);
-        cameraController.Watch(vaso.transform);
-        await cameraController.ZoomSize(40);
+        cameraController.lookAt = vaso.transform;
+        await cameraController.ZoomSize(20);
+        await customerList[0].StartOrdering();
     }
     public async Task StartChoosing()
     {
         Debug.Log("Start Choosing...");
         phase = Phase.Choose;
         gravityFromAccelerometer.Disable();
-        cameraController.Watch(seleccion.transform,new Vector3(0, -7, 0));
+        ResetPociones();
+        await Task.Delay(200);
+        cameraController.lookAt = seleccion.transform;
+        await cameraController.ZoomSize(11);
+        await Task.Delay(200);
+        seleccion.SetActive(false);
+        await Task.Delay(100);
+        seleccion.SetActive(true);
+        await Task.Delay(100);
+        seleccion.SetActive(false);
+        await Task.Delay(100);
+        seleccion.SetActive(true);
         TogglePociones(true);
-        var tasks = new List<Task>
-        {
-            ResetPociones(),
-            FadeSpriteTo(bartender.gameObject, 0),
-            FadeSpriteTo(bar, 0),
-            cameraController.ZoomSize(12)
-        };
-        await Task.WhenAll(tasks);
-        //await bartender.ShowVaso();
+        await bartender.ShowVaso();
     }
 
 
@@ -101,7 +105,7 @@ public class Manager : MonoBehaviour
         await cameraController.ZoomSize(6);
         SetPourColor(0);
         SetPourColor(1);
-        cameraController.Watch(vaso.transform);
+        cameraController.lookAt = vaso.transform;
         await MoveElementTo(pociones.transform, 0, 0);
         await MoveElementTo(tapa.transform, 0, 30);
         phase = Phase.Pour;
@@ -169,19 +173,10 @@ public class Manager : MonoBehaviour
         }
     }
 
-    public void ChangePhaseClick()
-    {
-        ChangePhase();
-    }
-
     public async Task ChangePhase()
     {
-        //await GetDrinkStats();
-        switch (phase)
+        switch(phase)
         {
-            case Phase.Choose:
-                await StartMixing();
-                break;
             case Phase.Pour:
                 await StartMixing();
                 break;
@@ -205,7 +200,7 @@ public class Manager : MonoBehaviour
         await Task.WhenAll(tasks);
         await MoveElementTo(vaso.transform, -7.7f, -3.3f);
         await Task.Delay(1500);
-        cameraController.Watch(customer.transform);
+        cameraController.lookAt = customer.transform;
         await Task.Delay(1000);
         await customer.StartEvaluating(await GetDrinkStats());
         await Task.Delay(1000);
@@ -244,7 +239,7 @@ public class Manager : MonoBehaviour
             Destroy(obj.gameObject);
         }
     }
-    /*Activa el boton de las pociones*/
+
     public void TogglePociones(bool active)
     {
         foreach(Pocion p in colorPotions)
@@ -253,14 +248,13 @@ public class Manager : MonoBehaviour
         }
     }
 
-    public async Task ResetPociones()
+    public void ResetPociones()
     {
         selectedColorPotions.Clear();
         foreach (Pocion p in colorPotions)
         {
             p.ResetPosition();
         }
-        await AnimationUtils.BlinkAnimation(seleccion);
     }
 
     private async Task<DrinkStats> GetDrinkStats()
@@ -281,20 +275,15 @@ public class Manager : MonoBehaviour
             promG += color.g;
             promB += color.b;
             differentColors.Add(color);
+            Destroy(obj.gameObject);
+            if(count < 50)
+                await Task.Delay(10); /** Simula que se toma la wea*/
         }
+
         promR = promR / allObjects.Length;
         promG = promG / allObjects.Length;
         promB = promB / allObjects.Length;
         Color promColor = new Color(promR, promG, promB);
-
-        foreach (DynamicParticle obj in allObjects)
-        {
-            //Destroy(obj.gameObject);
-            obj.SetColor(promColor);
-            await Task.Delay(10); /** Simula que se toma la wea*/
-        }
-
-        
         var color1 = new LabColor(promR, promG, promB);
         var color2 = new LabColor(customer.wantedColor.r, customer.wantedColor.g, customer.wantedColor.b);
         double deltaE = new CIEDE2000ColorDifference().ComputeDifference(color1, color2);

@@ -22,7 +22,7 @@ public class CameraShake : MonoBehaviour {
         this.shakeAmount = shakeAmount;
         InvokeRepeating("StartCameraShaking", 0f, 0.01f);
         Invoke("StopCameraCameraShaking", shakeTime);
-        await Task.Delay((int)(shakeTime*1000));
+        await Task.Delay(shakeTime);
     }
 
     private void StartCameraShaking() {

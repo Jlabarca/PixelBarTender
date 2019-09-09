@@ -27,7 +27,7 @@ public class Manager : MonoBehaviour
     private float initialTime;
     public Phase phase;
     public enum Phase { Start, Wait, Choose, Pour, Mix, Deliver, Score};
-    public ParticleGenerator drinkEmitter;
+
     // Start is called before the first frame update
     async void Start()
     {
@@ -72,25 +72,23 @@ public class Manager : MonoBehaviour
         await MoveElementTo(pociones.transform, 0, 30);
         await MoveElementTo(tapa.transform, 0, 30);
         await Task.Delay(1000);
-        cameraController.Watch(vaso.transform);
-        await cameraController.ZoomSize(40);
+        cameraController.lookAt = vaso.transform;
+        cameraController.offset = new Vector3(0, -5, 0);
+        await cameraController.ZoomSize(20);
+        await customerList[0].StartOrdering();
     }
     public async Task StartChoosing()
     {
         Debug.Log("Start Choosing...");
         phase = Phase.Choose;
         gravityFromAccelerometer.Disable();
-        cameraController.Watch(seleccion.transform,new Vector3(0, -7, 0));
+        ResetPociones();
+        await Task.Delay(200);
+        cameraController.lookAt = seleccion.transform;
+        await cameraController.ZoomSize(12);
+        await AnimationUtils.BlinkAnimation(seleccion);
         TogglePociones(true);
-        var tasks = new List<Task>
-        {
-            ResetPociones(),
-            FadeSpriteTo(bartender.gameObject, 0),
-            FadeSpriteTo(bar, 0),
-            cameraController.ZoomSize(12)
-        };
-        await Task.WhenAll(tasks);
-        //await bartender.ShowVaso();
+        await bartender.ShowVaso();
     }
 
 
@@ -101,7 +99,7 @@ public class Manager : MonoBehaviour
         await cameraController.ZoomSize(6);
         SetPourColor(0);
         SetPourColor(1);
-        cameraController.Watch(vaso.transform);
+        cameraController.lookAt = vaso.transform;
         await MoveElementTo(pociones.transform, 0, 0);
         await MoveElementTo(tapa.transform, 0, 30);
         phase = Phase.Pour;
@@ -169,26 +167,18 @@ public class Manager : MonoBehaviour
         }
     }
 
-    public void ChangePhaseClick()
-    {
-        ChangePhase();
-    }
-
     public async Task ChangePhase()
     {
-        //await GetDrinkStats();
-        switch (phase)
+        await GetDrinkStats();
+        /*switch (phase)
         {
-            case Phase.Choose:
-                await StartMixing();
-                break;
             case Phase.Pour:
                 await StartMixing();
                 break;
             case Phase.Mix:
                 await StartDeliver();
                 break;
-        }
+        }*/
     }
 
     private async Task StartDeliver()
@@ -205,7 +195,7 @@ public class Manager : MonoBehaviour
         await Task.WhenAll(tasks);
         await MoveElementTo(vaso.transform, -7.7f, -3.3f);
         await Task.Delay(1500);
-        cameraController.Watch(customer.transform);
+        cameraController.lookAt = customer.transform;
         await Task.Delay(1000);
         await customer.StartEvaluating(await GetDrinkStats());
         await Task.Delay(1000);
@@ -244,7 +234,7 @@ public class Manager : MonoBehaviour
             Destroy(obj.gameObject);
         }
     }
-    /*Activa el boton de las pociones*/
+
     public void TogglePociones(bool active)
     {
         foreach(Pocion p in colorPotions)
@@ -253,14 +243,13 @@ public class Manager : MonoBehaviour
         }
     }
 
-    public async Task ResetPociones()
+    public void ResetPociones()
     {
         selectedColorPotions.Clear();
         foreach (Pocion p in colorPotions)
         {
             p.ResetPosition();
         }
-        await AnimationUtils.BlinkAnimation(seleccion);
     }
 
     private async Task<DrinkStats> GetDrinkStats()

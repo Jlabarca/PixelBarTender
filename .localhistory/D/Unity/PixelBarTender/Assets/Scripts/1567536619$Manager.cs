@@ -27,7 +27,7 @@ public class Manager : MonoBehaviour
     private float initialTime;
     public Phase phase;
     public enum Phase { Start, Wait, Choose, Pour, Mix, Deliver, Score};
-    public ParticleGenerator drinkEmitter;
+
     // Start is called before the first frame update
     async void Start()
     {
@@ -72,8 +72,9 @@ public class Manager : MonoBehaviour
         await MoveElementTo(pociones.transform, 0, 30);
         await MoveElementTo(tapa.transform, 0, 30);
         await Task.Delay(1000);
-        cameraController.Watch(vaso.transform);
-        await cameraController.ZoomSize(40);
+        cameraController.lookAt = vaso.transform;
+        await cameraController.ZoomSize(20);
+        await customerList[0].StartOrdering();
     }
     public async Task StartChoosing()
     {
@@ -85,8 +86,8 @@ public class Manager : MonoBehaviour
         var tasks = new List<Task>
         {
             ResetPociones(),
-            FadeSpriteTo(bartender.gameObject, 0),
-            FadeSpriteTo(bar, 0),
+            FadeSpriteTo(bartender.gameObject, 1),
+            FadeSpriteTo(bar, 1),
             cameraController.ZoomSize(12)
         };
         await Task.WhenAll(tasks);
@@ -101,7 +102,7 @@ public class Manager : MonoBehaviour
         await cameraController.ZoomSize(6);
         SetPourColor(0);
         SetPourColor(1);
-        cameraController.Watch(vaso.transform);
+        cameraController.lookAt = vaso.transform;
         await MoveElementTo(pociones.transform, 0, 0);
         await MoveElementTo(tapa.transform, 0, 30);
         phase = Phase.Pour;
@@ -169,26 +170,18 @@ public class Manager : MonoBehaviour
         }
     }
 
-    public void ChangePhaseClick()
-    {
-        ChangePhase();
-    }
-
     public async Task ChangePhase()
     {
-        //await GetDrinkStats();
-        switch (phase)
+        await GetDrinkStats();
+        /*switch (phase)
         {
-            case Phase.Choose:
-                await StartMixing();
-                break;
             case Phase.Pour:
                 await StartMixing();
                 break;
             case Phase.Mix:
                 await StartDeliver();
                 break;
-        }
+        }*/
     }
 
     private async Task StartDeliver()
@@ -205,7 +198,7 @@ public class Manager : MonoBehaviour
         await Task.WhenAll(tasks);
         await MoveElementTo(vaso.transform, -7.7f, -3.3f);
         await Task.Delay(1500);
-        cameraController.Watch(customer.transform);
+        cameraController.lookAt = customer.transform;
         await Task.Delay(1000);
         await customer.StartEvaluating(await GetDrinkStats());
         await Task.Delay(1000);
